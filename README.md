@@ -12,9 +12,9 @@ This Job scheduler consists of 3 microservices which are created in `mail`, `sms
 2.  - Start Rabbit MQ using Docker image: `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.11-management
 `
     - Services will connect to port 5672 at localhost.
-3.  Run the commands `npm install` and `npm start` inside all 3 folders: mail, sms and scheduler.
-4. gRPC service will run at `http://127.0.0.1:50051` so make sure that port is free.
-5. Redis server is running on default port 6379.
+3. gRPC service will run at `http://127.0.0.1:50051` so make sure that port is free.
+4. Ensure Redis server is running on default port 6379.
+5.  Run the commands `npm install` and `npm start` inside all 3 folders: mail, sms and scheduler.
 
 ## Usage
 
