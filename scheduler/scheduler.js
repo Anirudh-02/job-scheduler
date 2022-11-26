@@ -99,7 +99,7 @@ async function getAllTasks() {
 }
 
 // helper function to format task to add to SQL DB
-// This was necessary as Sequelize doesn't allow ENUM datatype, so we needed to convert 'High', 'Low' and 'Medium' values of priority to an integer
+// This was necessary as Sequelize doesn't allow ENUM datatype for MySQL (Postgres only), so we needed to convert 'High', 'Low' and 'Medium' values of priority to an integer
 // This function also sets dependency to NULL if someone submitted an empty string for it
 function formatTaskToAddInDb(taskFromQueue) {
     const task = JSON.parse(Buffer.from(taskFromQueue.content).toString())
