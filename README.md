@@ -13,7 +13,7 @@ This Job scheduler consists of 3 microservices which are created in `mail`, `sms
 `
     - Services will connect to port 5672 at localhost.
 3.  Run the commands `npm install` and `npm start` inside all 3 folders: mail, sms and scheduler.
-4. gRPC service will run `http://127.0.0.1:50051` so make sure that port is free.
+4. gRPC service will run at `http://127.0.0.1:50051` so make sure that port is free.
 
 ## Usage
 
