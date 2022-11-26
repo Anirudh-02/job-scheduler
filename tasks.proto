@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+service MailService {
+    rpc getAllScheduledMails (empty) returns (MailList) {}
+}
+
+service SmsService {
+    rpc getAllScheduledSms (empty) returns (SmsList) {}
+}
+
+message empty {}
+
+message Task {
+    string name = 1;
+    string type = 2;
+}
+
+message MailList {
+    repeated Task tasks = 1;
+}
+
+message SmsList {
+    repeated Task tasks = 1;
+}
