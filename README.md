@@ -35,13 +35,13 @@ This Job scheduler consists of 3 microservices which are created in `mail`, `sms
 
 - SMS service runs at `http://localhost:3002` by default.
 - To add a task send a POST request at `/sms-service/add-task`
-- The body should have the following fields (validated using Joi):
+- The request body should have the following fields (validated using Joi):
     1. `name` (required, must be a string)
     2. `priority` (required, valid values are: 'High', 'Medium', 'Low' or 1, 2 & 3 respectively)
     3. `dependency` (not required, but must be a number or an empty string if present) - Additionally, dependency works by ID, which are auto-incremented in the SQL schema, so ensure you are providing a value which is less than the current tasks's ID, since tasks can only depend on other tasks which have a time_stamp earlier than their own.
 
 - Tasks with a dependency that has a time stamp greater than their own will not be added to the database.
-- `time_stamp`, `type` and `id` will be automatically added to a task by the service.
+- `time_stamp`, `type` and `id` will be automatically detected and added to a task by the service.
 - To see the list of scheduled mail tasks send a GET request at `/sms-service/get-scheduled-sms` (this works via gRPC connection between the service and the scheduler)
 
 ### __Scheduler service__
