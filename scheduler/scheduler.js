@@ -59,12 +59,7 @@ async function getScheduleAndStoreInRedis() {
         if (toSkip.includes(index)) {
             return
         }
-        try {
-            pushDependencyToSchedule(task, tasks, toSkip, schedule)
-        } catch (error) {
-            console.log(error);
-            res.status(400).send({ message: 'Failed to get schedule, there might be a circular dependency' })
-        }
+        pushDependencyToSchedule(task, tasks, toSkip, schedule)
         schedule.push(JSON.stringify({
             name: task.name,
             type: task.type
@@ -79,10 +74,6 @@ async function getScheduleAndStoreInRedis() {
 //helper function to push dependencies of a task to the schedule first
 function pushDependencyToSchedule(task, tasksArr, toSkipArr, scheduleArr) {
     if (task.dependency == null) {
-        return
-    }
-    const dependencyIndex = tasksArr.findIndex(depTask => depTask.id == task.dependency)
-    if (tasksArr[dependencyIndex].time_stamp > task.time_stamp || tasksArr[dependencyIndex].id == task.id) {
         return
     }
     toSkipArr.push(dependencyIndex)
@@ -130,9 +121,9 @@ function formatTaskToAddInDb(taskFromQueue) {
     return task
 }
 
-// ===========================================
-// functions to connect to mail and sms queues
-// ===========================================
+// ==================================================================
+// functions to consume mail and sms queues and create tasks in DB
+// ==================================================================
 
 let mailChannel, mailConnection
 async function connectMailQueue() {
@@ -145,6 +136,18 @@ async function connectMailQueue() {
             console.log(`${Buffer.from(mailTask.content)}`);
             mailChannel.ack(mailTask)
             const task = formatTaskToAddInDb(mailTask)
+            if (task.dependency) {
+                const dependency = await Tasks.findOne({
+                    where: {
+                        id: task.dependency
+                    }
+                })
+                // Tasks whose dependency doesn't exist or has a time_stamp greater than their own will not be added
+                if (!dependency || dependency.time_stamp > task.time_stamp) {
+                    console.log('invalid dependency');
+                    return
+                }
+            }
             await Tasks.create(task)
             getScheduleAndStoreInRedis()
         })
@@ -164,6 +167,18 @@ async function connectSmsQueue() {
             console.log(`${Buffer.from(smsTask.content)}`);
             smsChannel.ack(smsTask)
             const task = formatTaskToAddInDb(smsTask)
+            if (task.dependency) {
+                const dependency = await Tasks.findOne({
+                    where: {
+                        id: task.dependency
+                    }
+                })
+                // Tasks whose dependency doesn't exist or has a time_stamp greater than their own will not be added
+                if (!dependency || dependency.time_stamp > task.time_stamp) {
+                    console.log('invalid dependency');
+                    return
+                }
+            }
             await Tasks.create(task)
             getScheduleAndStoreInRedis()
         })

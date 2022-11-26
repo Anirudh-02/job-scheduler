@@ -1,7 +1,9 @@
 const Sequelize = require('sequelize')
 const dotenv = require('dotenv').config()
 
-const db = new Sequelize(process.env.MYSQL_URL || 'mysql://root@127.0.0.1:4000/test')
+const db = new Sequelize(process.env.MYSQL_URL || 'mysql://root@127.0.0.1:4000/test', {
+    logging: false
+})
 
 const Tasks = db.define('tasks', {
     id: {
